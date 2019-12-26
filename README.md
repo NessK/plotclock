@@ -1,16 +1,16 @@
 plotclock
 =========
 
-My fork of Johannes's awesome plotclock
+My copy of Johannes's awesome plotclock
 See: http://www.thingiverse.com/thing:248009/#instructions
 
 In simple words, a clock that plots time
 
-What is changed
+What is changed in this fork
 -------------
 - This is assembled with different HW from Taobao.com. See link below. Updated sizes according to new HW.
 - Added calibration routine for lift and for sweep position for easier setup for beginners like me
-- Changed sweep width
+- Changed width of sweep function
 
 How To:
 --------
