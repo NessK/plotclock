@@ -117,8 +117,7 @@ void setup()
 //  setTime(19,38,0,0,0,0);
 #endif
 
-  //drawTo(75.2, 47);
-  drawTo(72.1, 43.7);
+  drawTo(SweepX, SweepY);  
   lift(0);
   servo1.attach(SERVOPINLIFT);  //  lifting servo
   servo2.attach(SERVOPINLEFT);  //  left servo
@@ -135,7 +134,7 @@ void loop()
   // Servohorns will have 90° between movements, parallel to x and y axis
   drawTo(-3, 29.2);
   delay(500);
-  drawTo(74.1, 28); // Adjust here
+  drawTo(74.1, 28);
   delay(500);
 
 #elif defined CALIBRATION_LIFT
@@ -188,8 +187,7 @@ void loop()
     number(34, 25, i, 0.9);
     number(48, 25, (minute()-i*10), 0.9);
     lift(2);
-    //drawTo(74.2, 47.5);
-    drawTo(SweepX, SweepY);
+    drawTo(SweepX-0.3, SweepY+1.2); //Pen back in holder after typing, add offset due to angle of arms.
     lift(1);
     last_min = minute();
 
@@ -288,13 +286,13 @@ void number(float bx, float by, int num, float scale) {
     lift(1);
     delay(5); //To re-settle pressure on the sweeper.
     lift(0);
-    drawTo(70, 46);
+    drawTo(SweepX, SweepY);
     drawTo(55, 43);
 
-    drawTo(55, 49);
-    drawTo(5, 49);
-    drawTo(5, 45);
-    drawTo(55, 45);
+    drawTo(55, 44);
+    drawTo(5, 44);
+    drawTo(5, 43);
+    drawTo(55, 43);
     drawTo(55, 40);
 
     drawTo(5, 40);
@@ -310,7 +308,7 @@ void number(float bx, float by, int num, float scale) {
     drawTo(5, 20);
     drawTo(60, 44);
 
-    drawTo(SweepX, SweepY);
+    drawTo(SweepX+1.5, SweepY);
     lift(2);
 
     break;
