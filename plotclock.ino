@@ -14,36 +14,42 @@
 //       - added code to support DS1307, DS1337 and DS3231 real time clock chips
 //       - see http://www.pjrc.com/teensy/td_libs_DS1307RTC.html for how to hook up the real time clock 
 
+
+
 // delete or mark the next line as comment if you don't need these
-#define CALIBRATION      // enable calibration mode
-//#define REALTIMECLOCK    // enable real time clock
+//#define CALIBRATION_ARMS // enable calibration mode for arm servos
+//#define CALIBRATION_LIFT // enable calibration mode for lift servo
+//#define CALIBRATION_SWEEPER // enable calibration mode for sweeperpos
+#define REALTIMECLOCK    // enable real time clock
 
 // When in calibration mode, adjust the following factor until the servos move exactly 90 degrees
-#define SERVOFAKTORLEFT 650
-#define SERVOFAKTORRIGHT 650
+#define SERVOFAKTORLEFT 710
+#define SERVOFAKTORRIGHT 725
 
 // Zero-position of left and right servo
 // When in calibration mode, adjust the NULL-values so that the servo arms are at all times parallel
 // either to the X or Y axis
-#define SERVOLEFTNULL 2250
-#define SERVORIGHTNULL 920
+#define SERVOLEFTNULL 2170
+#define SERVORIGHTNULL 910
 
+
+// Board & Servo Connections
 #define SERVOPINLIFT  2
 #define SERVOPINLEFT  3
 #define SERVOPINRIGHT 4
 
 // lift positions of lifting servo
-#define LIFT0 1080 // on drawing surface
-#define LIFT1 925  // between numbers
-#define LIFT2 725  // going towards sweeper
+#define LIFT0 1750  // on drawing surface
+#define LIFT1 1680  // between numbers
+#define LIFT2 1300  // going towards sweeper
 
 // speed of liftimg arm, higher is slower
 #define LIFTSPEED 1500
 
 // length of arms
 #define L1 35
-#define L2 55.1
-#define L3 13.2
+#define L2 57.2
+#define L3 14.2
 
 // origin points of left and right servo 
 #define O1X 22
@@ -51,8 +57,13 @@
 #define O2X 47
 #define O2Y -25
 
-#include <Time.h> // see http://playground.arduino.cc/Code/time 
+// Sweeper Position
+#define SweepX 72.1
+#define SweepY 44.2
+
 #include <Servo.h>
+#include <Time.h>
+#include <TimeLib.h>
 
 #ifdef REALTIMECLOCK
 // for instructions on how to hook up a real time clock,
@@ -64,7 +75,7 @@
   #include <DS1307RTC.h> // see http://playground.arduino.cc/Code/time    
 #endif
 
-int servoLift = 1500;
+int servoLift = 1300;
 
 Servo servo1;  // 
 Servo servo2;  // 
@@ -103,10 +114,11 @@ void setup()
   }
 #else  
   // Set current time only the first to values, hh,mm are needed
-  setTime(19,38,0,0,0,0);
+//  setTime(19,38,0,0,0,0);
 #endif
 
-  drawTo(75.2, 47);
+  //drawTo(75.2, 47);
+  drawTo(72.1, 43.7);
   lift(0);
   servo1.attach(SERVOPINLIFT);  //  lifting servo
   servo2.attach(SERVOPINLEFT);  //  left servo
@@ -118,16 +130,35 @@ void setup()
 void loop() 
 { 
 
-#ifdef CALIBRATION
+#ifdef CALIBRATION_ARMS
 
   // Servohorns will have 90° between movements, parallel to x and y axis
   drawTo(-3, 29.2);
   delay(500);
-  drawTo(74.1, 28);
+  drawTo(74.1, 28); // Adjust here
   delay(500);
 
-#else 
+#elif defined CALIBRATION_LIFT
 
+  // Calibration of lift servo
+  drawTo(30, 43);
+  lift(0); // on drawing surface
+  delay(1000);
+  lift(1);// between numbers
+  delay(1000);
+  lift(2);// going towards sweeper
+  delay(1000);
+
+#elif defined CALIBRATION_SWEEPER
+
+  //  To adjust postion for Sweeper position 
+  lift(1);
+  drawTo(-3, 29.2);
+  delay(1000);
+  drawTo(SweepX, SweepY);
+  delay(5000);
+
+#else 
 
   int i = 0;
   if (last_min != minute()) {
@@ -157,7 +188,8 @@ void loop()
     number(34, 25, i, 0.9);
     number(48, 25, (minute()-i*10), 0.9);
     lift(2);
-    drawTo(74.2, 47.5);
+    //drawTo(74.2, 47.5);
+    drawTo(SweepX, SweepY);
     lift(1);
     last_min = minute();
 
@@ -253,30 +285,32 @@ void number(float bx, float by, int num, float scale) {
 
   case 111:
 
+    lift(1);
+    delay(5); //To re-settle pressure on the sweeper.
     lift(0);
     drawTo(70, 46);
-    drawTo(65, 43);
+    drawTo(55, 43);
 
-    drawTo(65, 49);
+    drawTo(55, 49);
     drawTo(5, 49);
     drawTo(5, 45);
-    drawTo(65, 45);
-    drawTo(65, 40);
+    drawTo(55, 45);
+    drawTo(55, 40);
 
     drawTo(5, 40);
     drawTo(5, 35);
-    drawTo(65, 35);
-    drawTo(65, 30);
+    drawTo(55, 35);
+    drawTo(55, 30);
 
     drawTo(5, 30);
     drawTo(5, 25);
-    drawTo(65, 25);
+    drawTo(55, 25);
     drawTo(65, 20);
 
     drawTo(5, 20);
     drawTo(60, 44);
 
-    drawTo(75.2, 47);
+    drawTo(SweepX, SweepY);
     lift(2);
 
     break;
@@ -307,7 +341,7 @@ void lift(char lift) {
       while (servoLift >= LIFT0) 
       {
         servoLift--;
-        servo1.writeMicroseconds(servoLift);				
+        servo1.writeMicroseconds(servoLift);        
         delayMicroseconds(LIFTSPEED);
       }
     } 
@@ -356,7 +390,7 @@ void lift(char lift) {
     else {
       while (servoLift <= LIFT2) {
         servoLift++;
-        servo1.writeMicroseconds(servoLift);				
+        servo1.writeMicroseconds(servoLift);        
         delayMicroseconds(LIFTSPEED);
       }
     }
@@ -451,8 +485,3 @@ void set_XY(double Tx, double Ty)
   servo3.writeMicroseconds(floor(((a1 - a2) * SERVOFAKTORRIGHT) + SERVORIGHTNULL));
 
 }
-
-
-
-
-
