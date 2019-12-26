@@ -40,7 +40,8 @@ Adjust #define SweepX 72.1 and Y for sweeper position while running CALIBRATION_
 
 Put back the "//" in front of the CALIBRATION_XXX to start writing the current time on your arduino.
 
- 
+
+
 ------------------------
 
 This is my first git project and its as much about learning Github as learning the plotclock.
